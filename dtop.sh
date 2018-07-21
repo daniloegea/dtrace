@@ -12,25 +12,25 @@ sched:::on-cpu
 
 sched:::off-cpu
 /self->ts/ {
-	@data[pid, curthread->td_name, execname] = sum(timestamp - self->ts);
+	@data[pid, cpu, curthread->td_name, execname] = sum(timestamp - self->ts);
 }
 
 tick-2sec
 {
 	printf("\n");
 	trunc(@data, 50);
-	printa("%@8u\t%d\t%s\t%s\n", @data);
+	printa("%@8u\t%d\t%d\t%s\t%s\n", @data);
 	clear(@data);
 }
 ' | awk -F'\t' -v dead=$1 '
 	BEGIN {
 		system("clear");
-		printf("%-6s %12s %15s %21s\n", "% CPU", "PID", "thread_name", "proc_name");
+		printf("%-6s %12s %7s %15s %21s\n", "% CPU", "PID", "CPU", "thread_name", "proc_name");
 	}
 	
 	length == 0 {
 		system("clear");
-		printf("%-6s %12s %15s %21s\n", "% CPU", "PID", "thread_name", "proc_name");
+		printf("%-6s %12s %7s %15s %21s\n", "% CPU", "PID", "CPU", "thread_name", "proc_name");
 		next;
 	}
 
@@ -48,10 +48,10 @@ tick-2sec
 
 	{ 
 		if(state != 0) {
-			printf("%f\t%d\t%-20s\t%s (dead)\n", p, $2, $3, $4);
+			printf("%f\t%d\t%d\t%-20s\t%s (dead)\n", p, $2, $3, $4, $5);
 		}
 		else {
-			printf("%f\t%d\t%-20s\t%s\n", p, $2, $3, $4);
+			printf("%f\t%d\t%d\t%-20s\t%s\n", p, $2, $3, $4, $5);
 		}
 	}
 	'
