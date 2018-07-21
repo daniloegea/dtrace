@@ -19,10 +19,10 @@ tick-2sec
 {
 	printf("\n");
 	trunc(@data, 50);
-	printa("%@8u\t%d\t\t%s\t\t\t%s\n", @data);
+	printa("%@8u\t%d\t%s\t%s\n", @data);
 	clear(@data);
 }
-' | awk -v dead=$1 '
+' | awk -F'\t' -v dead=$1 '
 	BEGIN {
 		system("clear");
 		printf("%-6s %12s %15s %21s\n", "% CPU", "PID", "thread_name", "proc_name");
